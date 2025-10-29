@@ -181,8 +181,8 @@ bool ImageBridge::decodeToImage(DD::Image::ImagePlane& imagePlane) {
         return false;
     }
     
-    std::string header = _image_received.substr(0, separator);
-    std::string data = _image_received.substr(separator + 1);
+    std::string header = _image_received_str.substr(0, separator);
+    std::string data = _image_received_str.substr(separator + 1);
     
     // Parse dimensions
     int width, height, channels;
