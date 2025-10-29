@@ -31,8 +31,10 @@ public:
     static const DD::Image::Iop::Description description;
     
 private:
-    std::string _image_to_send;    // Output: current image as base64
-    std::string _image_received;   // Input: base64 image to display
+    const char* _image_to_send;    // Changed from std::string
+    const char* _image_received;   // Changed from std::string
+    std::string _image_to_send_str;    // Internal storage
+    std::string _image_received_str;   // Internal storage
     
     void encodeCurrentImage(const DD::Image::ImagePlane& imagePlane);
     bool decodeToImage(DD::Image::ImagePlane& imagePlane);

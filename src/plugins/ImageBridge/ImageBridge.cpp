@@ -111,6 +111,8 @@ ImageBridge::ImageBridge(Node* node)
     : DD::Image::PlanarIop(node)
     , _image_to_send("")
     , _image_received("")
+    , _image_to_send_str("")
+    , _image_received_str("")
 {
 }
 
@@ -127,7 +129,7 @@ void ImageBridge::renderStripe(DD::Image::ImagePlane& imagePlane) {
     encodeCurrentImage(imagePlane);
     
     // If we have received image data, decode and use it
-    if (!_image_received.empty() && _image_received != "") {
+    if (_image_received && strlen(_image_received) > 0) {
         decodeToImage(imagePlane);
     }
     // Otherwise, the input image passes through (already fetched above)
@@ -160,17 +162,21 @@ void ImageBridge::encodeCurrentImage(const DD::Image::ImagePlane& imagePlane) {
     }
     
     // Encode to base64 with header
-    _image_to_send = header_str + base64_encode(buffer.data(), dataSize);
+    _image_to_send_str = header_str + base64_encode(buffer.data(), dataSize);
+    _image_to_send = _image_to_send_str.c_str();
     
     // Update the knob
     if (knob("image_to_send")) {
-        knob("image_to_send")->set_text(_image_to_send.c_str());
+        knob("image_to_send")->set_text(_image_to_send);
     }
 }
 
 bool ImageBridge::decodeToImage(DD::Image::ImagePlane& imagePlane) {
+
+    _image_received_str = _image_received;  // Copy to string for processing
+
     // Parse header (width,height,channels|base64data)
-    size_t separator = _image_received.find('|');
+    size_t separator = _image_received_str.find('|');
     if (separator == std::string::npos) {
         return false;
     }
